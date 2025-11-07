@@ -99,7 +99,7 @@ function JobDetailsPage() {
         </button>
       </div>
       
-      <main className="flex-1 overflow-y-auto pt-[100px] pb-[80px] px-6 md:px-8">
+      <main className="flex-1 overflow-hidden pt-[100px] pb-[100px] px-6 md:px-8">
         <div className="max-w-[700px] mx-auto">
           <div className="mb-8">
             <h2 className="text-[36px] md:text-[42px] font-bold text-ink mb-3">Job Details</h2>
@@ -225,6 +225,11 @@ function JobDetailsPage() {
           </div>
         </div>
       </main>
+      
+      {/* Footer with ResuMock */}
+      <footer className="fixed bottom-0 left-0 right-0 py-4 text-center">
+        <p className="text-xs text-ink/40 font-medium">ResuMock</p>
+      </footer>
       
       {toast && (
         <Toast
