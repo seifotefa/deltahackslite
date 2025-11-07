@@ -27,7 +27,7 @@ function MainAppPage() {
     if (!status.step1Complete) {
       setAlert("Let's add your resume again.");
       setToast({ message: "Let's add your resume again.", type: 'info' });
-      setTimeout(() => navigate('/'), 1500);
+      setTimeout(() => navigate('/upload'), 1500);
       return;
     }
     if (!status.step2Complete) {
@@ -58,7 +58,7 @@ function MainAppPage() {
   }, [navigate, location]);
   
   const handleEditResume = () => {
-    navigate('/');
+    navigate('/upload');
   };
   
   const handleEditJob = () => {
@@ -66,7 +66,7 @@ function MainAppPage() {
   };
   
   const handleChangeResume = () => {
-    navigate('/');
+    navigate('/upload');
   };
   
   const handleChangeJobInfo = () => {
@@ -153,10 +153,20 @@ function MainAppPage() {
   }
   
   return (
-    <div className="min-h-screen">
-      <TopBar title="MockMate" />
+    <div className="h-screen overflow-hidden flex flex-col">
+      <TopBar title="MockMate" showTitle={false} />
       
-      <main className="pt-[160px] pb-[80px] px-5 md:pt-[180px] md:pb-[160px] md:px-6">
+      {/* ResuMock in top left */}
+      <div className="fixed top-6 left-6 z-[60]">
+        <button
+          onClick={() => navigate('/')}
+          className="text-xl font-bold text-ink hover:text-ink/80 spring-transition-fast cursor-pointer bg-white/90 backdrop-blur-none border-none p-0"
+        >
+          ResuMock
+        </button>
+      </div>
+      
+      <main className="flex-1 overflow-hidden pt-[100px] pb-[100px] px-6 md:px-8">
         <div className="max-w-[860px] mx-auto space-y-6">
           {/* Inline Alert */}
           {alert && (
@@ -176,7 +186,7 @@ function MainAppPage() {
                 <span className="text-sm font-medium text-ink">{resume.name}</span>
                 <button
                   onClick={handleEditResume}
-                  className="text-primary hover:text-primary-hover text-xs font-medium spring-transition-fast ml-1"
+                  className="text-ink/70 hover:text-ink text-xs font-medium spring-transition-fast ml-1"
                   aria-label="Change resume"
                 >
                   Change
@@ -193,7 +203,7 @@ function MainAppPage() {
                 </span>
                 <button
                   onClick={handleEditJob}
-                  className="text-primary hover:text-primary-hover text-xs font-medium spring-transition-fast ml-1"
+                  className="text-ink/70 hover:text-ink text-xs font-medium spring-transition-fast ml-1"
                   aria-label="Edit job info"
                 >
                   Edit
@@ -206,9 +216,9 @@ function MainAppPage() {
           {questions.length === 0 ? (
             <div className="glass-card rounded-card p-12 md:p-16 card-shadow text-center">
               <div className="spring-transition animate-slide-in-from-bottom-2">
-                <div className="w-24 h-24 mx-auto mb-6 bg-primary/10 rounded-full flex items-center justify-center">
+                <div className="w-24 h-24 mx-auto mb-6 bg-ink/10 rounded-full flex items-center justify-center">
                   <svg
-                    className="w-12 h-12 text-primary"
+                    className="w-12 h-12 text-ink"
                     fill="none"
                     stroke="currentColor"
                     viewBox="0 0 24 24"
@@ -226,7 +236,7 @@ function MainAppPage() {
                 <button
                   onClick={handleGenerateQuestions}
                   disabled={loadingQuestions}
-                  className="px-8 py-4 bg-primary text-white rounded-button font-semibold text-lg spring-transition-fast hover:bg-primary-hover focus:outline-none focus:ring-2 focus:ring-focus-ring focus:ring-offset-2 shadow-lg hover:shadow-xl active:scale-[0.98]"
+                  className="px-8 py-4 bg-ink text-white rounded-button font-semibold text-lg spring-transition-fast hover:bg-ink/90 focus:outline-none focus:ring-2 focus:ring-focus-ring focus:ring-offset-2 shadow-lg hover:shadow-xl active:scale-[0.98]"
                 >
                   {loadingQuestions ? (
                     <span className="flex items-center gap-3">
@@ -282,6 +292,11 @@ function MainAppPage() {
           )}
         </div>
       </main>
+      
+      {/* Footer with ResuMock */}
+      <footer className="fixed bottom-0 left-0 right-0 py-4 text-center">
+        <p className="text-xs text-ink/40 font-medium">ResuMock</p>
+      </footer>
       
       {toast && (
         <Toast

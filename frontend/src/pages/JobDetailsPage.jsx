@@ -24,7 +24,7 @@ function JobDetailsPage() {
     const resume = storage.getResume();
     if (!resume) {
       setAlert('Complete this step to continue.');
-      setTimeout(() => navigate('/'), 1500);
+      setTimeout(() => navigate('/upload'), 1500);
       return;
     }
     
@@ -68,7 +68,7 @@ function JobDetailsPage() {
   };
   
   const handleBack = () => {
-    navigate('/');
+    navigate('/upload');
   };
   
   const handleContinue = () => {
@@ -86,171 +86,150 @@ function JobDetailsPage() {
   const hasRoleValue = role.trim().length > 0;
   
   return (
-    <div className="min-h-screen">
-      <TopBar title="Job Details" />
+    <div className="h-screen overflow-hidden flex flex-col">
+      <TopBar title="Job Details" showTitle={false} />
       
-      <main className="pt-[160px] pb-[80px] px-5 md:pt-[180px] md:pb-[160px] md:px-6">
-        <div className="max-w-[860px] mx-auto">
-          <div className="glass-card rounded-card p-6 md:p-[32px] card-shadow spring-transition hover:shadow-xl hover:-translate-y-1">
-            <div className="flex items-center gap-2 mb-2">
-              <h2 className="text-[32px] font-bold text-ink">Job Details</h2>
-              <div className="relative">
-                <button
-                  onMouseEnter={() => setShowTooltip(true)}
-                  onMouseLeave={() => setShowTooltip(false)}
-                  onClick={() => setShowTooltip(!showTooltip)}
-                  className="w-5 h-5 rounded-full border border-ink/20 flex items-center justify-center text-ink/60 hover:text-ink hover:border-ink/40 spring-transition-fast"
-                  aria-label="Why we ask"
-                >
-                  <span className="text-xs">?</span>
-                </button>
-                {showTooltip && (
-                  <div className="absolute top-6 left-0 w-64 p-3 bg-ink text-white rounded-button text-xs shadow-lg z-10 spring-transition animate-slide-in-from-bottom-2">
-                    We use this information to tailor interview questions. No data is uploaded externally—everything stays on your device.
-                  </div>
-                )}
-              </div>
-            </div>
-            
-            <p className="text-ink/70 mb-8">We'll tailor questions to this role.</p>
-            
-            <div className="space-y-6 mt-8">
-              {/* Company Name */}
-              <div className="spring-transition animate-slide-in-from-bottom-2" style={{ animationDelay: '40ms' }}>
-                <div className="relative">
-                  <label 
-                    htmlFor="company" 
-                    className={`
-                      absolute left-4 spring-transition-fast pointer-events-none
-                      ${isCompanyFocused || hasCompanyValue
-                        ? 'top-2 text-xs text-primary'
-                        : 'top-4 text-base text-ink/60'
-                      }
-                    `}
-                  >
-                    Company Name
-                  </label>
-                  <input
-                    ref={companyInputRef}
-                    id="company"
-                    type="text"
-                    value={company}
-                    onChange={handleCompanyChange}
-                    onBlur={() => {
-                      validateField('company', company);
-                      setIsCompanyFocused(false);
-                    }}
-                    onFocus={() => {
-                      setErrors(prev => ({ ...prev, company: '' }));
-                      setIsCompanyFocused(true);
-                    }}
-                    placeholder="e.g., Apple, Shopify, RBC"
-                    className={`
-                      w-full px-4 pt-6 pb-2 rounded-button border-2
-                      spring-transition-fast
-                      focus:outline-none focus:ring-2 focus:ring-focus-ring focus:ring-offset-2
-                      ${errors.company
-                        ? 'border-red-300 focus:ring-red-500 bg-red-50'
-                        : 'border-gray-200 focus:border-primary bg-white/80'
-                      }
-                    `}
-                    aria-invalid={!!errors.company}
-                    aria-describedby={errors.company ? 'company-error' : undefined}
-                  />
-                </div>
-                {errors.company && (
-                  <p id="company-error" className="mt-2 text-sm text-red-600 spring-transition animate-slide-in-from-bottom-2">
-                    {errors.company}
-                  </p>
-                )}
-              </div>
-              
-              {/* Role Title */}
-              <div className="spring-transition animate-slide-in-from-bottom-2" style={{ animationDelay: '80ms' }}>
-                <div className="relative">
-                  <label 
-                    htmlFor="role" 
-                    className={`
-                      absolute left-4 spring-transition-fast pointer-events-none
-                      ${isRoleFocused || hasRoleValue
-                        ? 'top-2 text-xs text-primary'
-                        : 'top-4 text-base text-ink/60'
-                      }
-                    `}
-                  >
-                    Role Title
-                  </label>
-                  <input
-                    ref={roleInputRef}
-                    id="role"
-                    type="text"
-                    value={role}
-                    onChange={handleRoleChange}
-                    onBlur={() => {
-                      validateField('role', role);
-                      setIsRoleFocused(false);
-                    }}
-                    onFocus={() => {
-                      setErrors(prev => ({ ...prev, role: '' }));
-                      setIsRoleFocused(true);
-                    }}
-                    placeholder="e.g., Software Engineer"
-                    className={`
-                      w-full px-4 pt-6 pb-2 rounded-button border-2
-                      spring-transition-fast
-                      focus:outline-none focus:ring-2 focus:ring-focus-ring focus:ring-offset-2
-                      ${errors.role
-                        ? 'border-red-300 focus:ring-red-500 bg-red-50'
-                        : 'border-gray-200 focus:border-primary bg-white/80'
-                      }
-                    `}
-                    aria-invalid={!!errors.role}
-                    aria-describedby={errors.role ? 'role-error' : undefined}
-                  />
-                </div>
-                {errors.role && (
-                  <p id="role-error" className="mt-2 text-sm text-red-600 spring-transition animate-slide-in-from-bottom-2">
-                    {errors.role}
-                  </p>
-                )}
-              </div>
-            </div>
-            
-            {/* Inline Alert */}
-            {alert && (
-              <div className="mt-6">
-                <InlineAlert message={alert} type="error" />
-              </div>
-            )}
-            
-            {/* Actions */}
-            <div className="flex gap-4 mt-8 md:justify-end">
-              <button
-                onClick={handleBack}
-                className="px-6 py-3 bg-transparent text-ink/70 rounded-button font-medium spring-transition-fast hover:bg-ink/5 hover:text-ink focus:outline-none focus:ring-2 focus:ring-focus-ring focus:ring-offset-2 md:w-auto w-full"
+      {/* ResuMock in top left */}
+      <div className="fixed top-6 left-6 z-[60]">
+        <button
+          onClick={() => navigate('/')}
+          className="text-xl font-bold text-ink hover:text-ink/80 spring-transition-fast cursor-pointer bg-white/90 backdrop-blur-none border-none p-0"
+        >
+          ResuMock
+        </button>
+      </div>
+      
+      <main className="flex-1 overflow-hidden pt-[100px] pb-[100px] px-6 md:px-8">
+        <div className="max-w-[700px] mx-auto">
+          <div className="mb-8">
+            <h2 className="text-[36px] md:text-[42px] font-bold text-ink mb-3">Job Details</h2>
+            <p className="text-lg text-ink/60">We'll tailor questions to this role.</p>
+          </div>
+          
+          <div className="space-y-8">
+            {/* Company Name */}
+            <div>
+              <label 
+                htmlFor="company" 
+                className="block text-sm font-semibold text-ink mb-3"
               >
-                Back
-              </button>
-              <button
-                onClick={handleContinue}
-                disabled={!isFormValid}
+                Company Name
+              </label>
+              <input
+                ref={companyInputRef}
+                id="company"
+                type="text"
+                value={company}
+                onChange={handleCompanyChange}
+                onBlur={() => {
+                  validateField('company', company);
+                  setIsCompanyFocused(false);
+                }}
+                onFocus={() => {
+                  setErrors(prev => ({ ...prev, company: '' }));
+                  setIsCompanyFocused(true);
+                }}
+                placeholder="e.g., Apple, Shopify, RBC"
                 className={`
-                  px-6 py-3 rounded-button font-semibold
+                  w-full px-5 py-4 rounded-button border-2 text-base
                   spring-transition-fast
                   focus:outline-none focus:ring-2 focus:ring-focus-ring focus:ring-offset-2
-                  md:w-auto w-full
-                  ${isFormValid
-                    ? 'bg-primary text-white hover:bg-primary-hover shadow-lg hover:shadow-xl active:scale-[0.98]'
-                    : 'bg-gray-300 text-gray-500 cursor-not-allowed opacity-60'
+                  ${errors.company
+                    ? 'border-red-300 focus:ring-red-500 bg-red-50'
+                    : 'border-gray-300 focus:border-ink bg-white'
                   }
                 `}
-              >
-                Continue
-              </button>
+                aria-invalid={!!errors.company}
+                aria-describedby={errors.company ? 'company-error' : undefined}
+              />
+              {errors.company && (
+                <p id="company-error" className="mt-2 text-sm text-red-600">
+                  {errors.company}
+                </p>
+              )}
             </div>
+            
+            {/* Role Title */}
+            <div>
+              <label 
+                htmlFor="role" 
+                className="block text-sm font-semibold text-ink mb-3"
+              >
+                Role Title
+              </label>
+              <input
+                ref={roleInputRef}
+                id="role"
+                type="text"
+                value={role}
+                onChange={handleRoleChange}
+                onBlur={() => {
+                  validateField('role', role);
+                  setIsRoleFocused(false);
+                }}
+                onFocus={() => {
+                  setErrors(prev => ({ ...prev, role: '' }));
+                  setIsRoleFocused(true);
+                }}
+                placeholder="e.g., Software Engineer"
+                className={`
+                  w-full px-5 py-4 rounded-button border-2 text-base
+                  spring-transition-fast
+                  focus:outline-none focus:ring-2 focus:ring-focus-ring focus:ring-offset-2
+                  ${errors.role
+                    ? 'border-red-300 focus:ring-red-500 bg-red-50'
+                    : 'border-gray-300 focus:border-ink bg-white'
+                  }
+                `}
+                aria-invalid={!!errors.role}
+                aria-describedby={errors.role ? 'role-error' : undefined}
+              />
+              {errors.role && (
+                <p id="role-error" className="mt-2 text-sm text-red-600">
+                  {errors.role}
+                </p>
+              )}
+            </div>
+          </div>
+          
+          {/* Inline Alert */}
+          {alert && (
+            <div className="mt-6">
+              <InlineAlert message={alert} type="error" />
+            </div>
+          )}
+          
+          {/* Actions */}
+          <div className="flex gap-4 mt-10">
+            <button
+              onClick={handleBack}
+              className="px-8 py-4 bg-transparent text-ink/70 rounded-button font-semibold spring-transition-fast hover:bg-ink/5 hover:text-ink focus:outline-none focus:ring-2 focus:ring-focus-ring focus:ring-offset-2"
+            >
+              Back
+            </button>
+            <button
+              onClick={handleContinue}
+              disabled={!isFormValid}
+              className={`
+                flex-1 px-8 py-4 rounded-button font-semibold text-base
+                spring-transition-fast
+                focus:outline-none focus:ring-2 focus:ring-focus-ring focus:ring-offset-2
+                ${isFormValid
+                  ? 'bg-ink text-white hover:bg-ink/90 shadow-lg hover:shadow-xl active:scale-[0.98]'
+                  : 'bg-gray-300 text-gray-500 cursor-not-allowed opacity-60'
+                }
+              `}
+            >
+              Continue
+            </button>
           </div>
         </div>
       </main>
+      
+      {/* Footer with ResuMock */}
+      <footer className="fixed bottom-0 left-0 right-0 py-4 text-center">
+        <p className="text-xs text-ink/40 font-medium">ResuMock</p>
+      </footer>
       
       {toast && (
         <Toast

@@ -60,7 +60,7 @@ function UploadResumePage() {
       if (hadFile) {
         setToast({ message: 'Replaced previous file.', type: 'info' });
       } else {
-        setToast({ message: 'Resume added.', type: 'success' });
+        setToast({ message: 'Resume added.', type: 'info' });
       }
     }
   };
@@ -114,30 +114,41 @@ function UploadResumePage() {
   };
   
   return (
-    <div className="min-h-screen">
-      <TopBar title="profilo.ai" />
+    <div className="h-screen overflow-hidden flex flex-col">
+      <TopBar title="ResuMock" showTitle={false} />
       
-      <main className="pt-[160px] pb-[80px] px-5 md:pt-[180px] md:pb-[160px] md:px-6">
-        <div className="max-w-[860px] mx-auto">
-          <div className="glass-card rounded-card p-6 md:p-[32px] card-shadow spring-transition hover:shadow-xl hover:-translate-y-1">
-            <h2 className="text-[32px] font-bold text-ink mb-2">Upload Your Resume</h2>
-            <p className="text-ink/70 mb-8">Add a PDF to begin.</p>
-            
-            {/* Dropzone */}
-            <div
-              onDrop={handleDrop}
-              onDragOver={handleDragOver}
-              onDragLeave={handleDragLeave}
-              onClick={() => fileInputRef.current?.click()}
-              className={`
-                relative border-2 border-dashed rounded-card h-[240px] flex items-center justify-center
-                spring-transition cursor-pointer
-                ${isDragging 
-                  ? 'border-primary bg-primary/5 ring-2 ring-focus-ring' 
-                  : 'border-gray-300 hover:border-primary/40 hover:bg-primary/5'
-                }
-                ${file ? 'border-primary/40 bg-primary/5' : ''}
-              `}
+      {/* ResuMock in top left */}
+      <div className="fixed top-6 left-6 z-[60]">
+        <button
+          onClick={() => navigate('/')}
+          className="text-xl font-bold text-ink hover:text-ink/80 spring-transition-fast cursor-pointer bg-white/90 backdrop-blur-none border-none p-0"
+        >
+          ResuMock
+        </button>
+      </div>
+      
+      <main className="flex-1 overflow-hidden pt-[100px] pb-[100px] px-6 md:px-8">
+        <div className="max-w-[700px] mx-auto">
+          <div className="mb-10">
+            <h2 className="text-[36px] md:text-[42px] font-bold text-ink mb-3">Upload Your Resume</h2>
+            <p className="text-lg text-ink/60">Add a resume to begin.</p>
+          </div>
+          
+          {/* Dropzone */}
+          <div
+            onDrop={handleDrop}
+            onDragOver={handleDragOver}
+            onDragLeave={handleDragLeave}
+            onClick={() => fileInputRef.current?.click()}
+            className={`
+              relative border-2 rounded-card h-[280px] flex items-center justify-center
+              spring-transition cursor-pointer bg-white
+              ${isDragging 
+                ? 'border-ink bg-ink/5 ring-2 ring-ink/20' 
+                : 'border-gray-300 hover:border-ink/40 hover:bg-gray-50'
+              }
+              ${file ? 'border-ink/40 bg-gray-50' : ''}
+            `}
               role="button"
               tabIndex={0}
               onKeyDown={(e) => {
@@ -178,62 +189,60 @@ function UploadResumePage() {
                 </div>
               ) : (
                 <div className="w-full px-6">
-                  <div className="spring-transition animate-slide-in-from-bottom-2">
-                    <div className="bg-white/80 rounded-card p-4 card-shadow">
-                      <div className="flex items-center gap-4">
-                        <div className="w-10 h-10 bg-red-100 rounded-button flex items-center justify-center flex-shrink-0">
-                          <span className="text-red-600 font-bold text-xs">PDF</span>
-                        </div>
-                        <div className="flex-1 min-w-0">
-                          <p className="font-semibold text-ink truncate">{file.name}</p>
-                          <p className="text-sm text-ink/60">{formatFileSize(file.size)}</p>
-                        </div>
-                        <button
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            handleRemove();
-                          }}
-                          className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-gray-100 spring-transition-fast text-ink/60 hover:text-ink"
-                          aria-label="Remove file"
-                        >
-                          <span className="text-xl">×</span>
-                        </button>
-                      </div>
+                  <div className="flex items-center gap-3 justify-center">
+                    <div className="w-8 h-8 bg-gray-200 rounded-button flex items-center justify-center flex-shrink-0">
+                      <span className="text-ink font-semibold text-xs">PDF</span>
                     </div>
-                    <p className="text-xs text-ink/50 mt-2 text-center">Stored locally for this session.</p>
+                    <div className="flex-1 min-w-0 text-center">
+                      <p className="font-medium text-ink truncate text-sm">{file.name}</p>
+                    </div>
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleRemove();
+                      }}
+                      className="w-6 h-6 flex items-center justify-center rounded-full hover:bg-gray-200 spring-transition-fast text-ink/50 hover:text-ink"
+                      aria-label="Remove file"
+                    >
+                      <span className="text-lg">×</span>
+                    </button>
                   </div>
                 </div>
               )}
             </div>
             
-            {/* Error message */}
-            {error && (
-              <div id="dropzone-error" className="mt-4 p-4 bg-red-50 border border-red-200 rounded-card spring-transition animate-slide-in-from-bottom-2" role="alert">
-                <p className="text-red-600 text-sm font-medium">{error}</p>
-              </div>
-            )}
-            
-            {/* Actions */}
-            <div className="mt-8">
-              <button
-                onClick={handleContinue}
-                disabled={!file || !!error}
-                className={`
-                  w-full px-6 py-4 rounded-button font-semibold
-                  spring-transition-fast
-                  focus:outline-none focus:ring-2 focus:ring-focus-ring focus:ring-offset-2
-                  ${file && !error
-                    ? 'bg-primary text-white hover:bg-primary-hover shadow-lg hover:shadow-xl active:scale-[0.98]'
-                    : 'bg-gray-300 text-gray-500 cursor-not-allowed opacity-60'
-                  }
-                `}
-              >
-                Continue
-              </button>
+          {/* Error message */}
+          {error && (
+            <div id="dropzone-error" className="mt-6 p-4 bg-red-50 border border-red-200 rounded-button" role="alert">
+              <p className="text-red-600 text-sm font-medium">{error}</p>
             </div>
+          )}
+          
+          {/* Actions */}
+          <div className="mt-10">
+            <button
+              onClick={handleContinue}
+              disabled={!file || !!error}
+              className={`
+                w-full px-8 py-4 rounded-button font-semibold text-base
+                spring-transition-fast
+                focus:outline-none focus:ring-2 focus:ring-focus-ring focus:ring-offset-2
+                ${file && !error
+                  ? 'bg-ink text-white hover:bg-ink/90 shadow-lg hover:shadow-xl active:scale-[0.98]'
+                  : 'bg-gray-300 text-gray-500 cursor-not-allowed opacity-60'
+                }
+              `}
+            >
+              Continue
+            </button>
           </div>
         </div>
       </main>
+      
+      {/* Footer with ResuMock */}
+      <footer className="fixed bottom-0 left-0 right-0 py-4 text-center">
+        <p className="text-xs text-ink/40 font-medium">ResuMock</p>
+      </footer>
       
       {toast && (
         <Toast
