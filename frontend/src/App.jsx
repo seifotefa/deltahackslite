@@ -1,5 +1,6 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from 'react-router-dom';
+import HomePage from './pages/HomePage';
 import UploadResumePage from './pages/UploadResumePage';
 import JobDetailsPage from './pages/JobDetailsPage';
 import MainAppPage from './pages/MainAppPage';
@@ -11,8 +12,9 @@ function AppContent() {
   return (
     <div className="page-transition">
       <Routes location={location} key={location.pathname}>
+        <Route path="/" element={<HomePage />} />
         <Route 
-          path="/" 
+          path="/upload" 
           element={
             <ProtectedRoute requiredStep={1}>
               <UploadResumePage />

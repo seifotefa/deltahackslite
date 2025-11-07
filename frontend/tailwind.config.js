@@ -22,6 +22,7 @@ module.exports = {
         'slide-in-from-bottom-2': 'slideInFromBottom2 0.3s ease-out',
         'slide-in-from-bottom-4': 'slideInFromBottom4 0.3s ease-out',
         'shimmer': 'shimmer 2s infinite',
+        'breathe': 'breathe 2s ease-in-out infinite',
       },
       keyframes: {
         fadeIn: {
@@ -39,6 +40,10 @@ module.exports = {
         shimmer: {
           '0%': { backgroundPosition: '-1000px 0' },
           '100%': { backgroundPosition: '1000px 0' },
+        },
+        breathe: {
+          '0%, 100%': { transform: 'scale(1)' },
+          '50%': { transform: 'scale(1.15)' },
         },
       },
     },

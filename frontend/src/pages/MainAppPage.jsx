@@ -27,7 +27,7 @@ function MainAppPage() {
     if (!status.step1Complete) {
       setAlert("Let's add your resume again.");
       setToast({ message: "Let's add your resume again.", type: 'info' });
-      setTimeout(() => navigate('/'), 1500);
+      setTimeout(() => navigate('/upload'), 1500);
       return;
     }
     if (!status.step2Complete) {
@@ -58,7 +58,7 @@ function MainAppPage() {
   }, [navigate, location]);
   
   const handleEditResume = () => {
-    navigate('/');
+    navigate('/upload');
   };
   
   const handleEditJob = () => {
@@ -66,7 +66,7 @@ function MainAppPage() {
   };
   
   const handleChangeResume = () => {
-    navigate('/');
+    navigate('/upload');
   };
   
   const handleChangeJobInfo = () => {
