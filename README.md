@@ -84,7 +84,7 @@ PORT=5000
 - Express.js
 - Google Gemini API
 
-## 📄 License
+## 📄 Devpost
 
-ISC
+[source](https://devpost.com/software/resumock)
 
