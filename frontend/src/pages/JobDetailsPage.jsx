@@ -3,7 +3,8 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import TopBar from '../components/TopBar';
 import Toast from '../components/Toast';
 import InlineAlert from '../components/InlineAlert';
-import { storage } from '../utils/storage';
+import { loadSession, saveSession, ensureStep } from '../lib/session';
+import { generateQuestions } from '../lib/api';
 
 function JobDetailsPage() {
   const navigate = useNavigate();
@@ -16,15 +17,16 @@ function JobDetailsPage() {
   const [showTooltip, setShowTooltip] = useState(false);
   const [isCompanyFocused, setIsCompanyFocused] = useState(false);
   const [isRoleFocused, setIsRoleFocused] = useState(false);
+  const [generating, setGenerating] = useState(false);
   const companyInputRef = useRef(null);
   const roleInputRef = useRef(null);
   
   useEffect(() => {
-    // Check if resume exists, if not redirect to step 1
-    const resume = storage.getResume();
-    if (!resume) {
+    // Check if resume is uploaded (sessionId exists)
+    const session = loadSession();
+    if (!ensureStep('resume')) {
       setAlert('Complete this step to continue.');
-      setTimeout(() => navigate('/upload'), 1500);
+      setTimeout(() => navigate('/'), 1500);
       return;
     }
     
@@ -34,10 +36,9 @@ function JobDetailsPage() {
     }
     
     // Load existing job info if available
-    const saved = storage.getJobInfo();
-    if (saved) {
-      setCompany(saved.company || '');
-      setRole(saved.role || '');
+    if (session.company && session.role) {
+      setCompany(session.company);
+      setRole(session.role);
     }
   }, [navigate, location]);
   
@@ -71,13 +72,62 @@ function JobDetailsPage() {
     navigate('/upload');
   };
   
-  const handleContinue = () => {
+  const handleContinue = async () => {
     const companyValid = validateField('company', company);
     const roleValid = validateField('role', role);
     
-    if (companyValid && roleValid) {
-      storage.setJobInfo({ company: company.trim(), role: role.trim() });
-      navigate('/app');
+    if (!companyValid || !roleValid) {
+      return;
+    }
+
+    const session = loadSession();
+    if (!session.sessionId) {
+      setErrors({ company: '', role: 'Please upload a resume first.' });
+      setToast({ message: 'Please upload a resume first.', type: 'error' });
+      setTimeout(() => navigate('/'), 1500);
+      return;
+    }
+
+    setGenerating(true);
+    setErrors({ company: '', role: '' });
+
+    try {
+      const trimmedCompany = company.trim();
+      const trimmedRole = role.trim();
+      
+      console.log('[Frontend] Generating questions:', { sessionId: session.sessionId, company: trimmedCompany, role: trimmedRole });
+      
+      // Save company and role to session first
+      session.company = trimmedCompany;
+      session.role = trimmedRole;
+      saveSession(session);
+      
+      // Generate questions
+      const result = await generateQuestions({
+        sessionId: session.sessionId,
+        company: trimmedCompany,
+        role: trimmedRole,
+      });
+      
+      console.log('[Frontend] Questions generated:', result);
+      
+      // Save questions to session
+      session.questions = result.questions;
+      session.currentIndex = 0;
+      saveSession(session);
+      
+      setToast({ message: 'Setup complete — let\'s start!', type: 'success' });
+      
+      // Navigate to main app
+      setTimeout(() => {
+        navigate('/app');
+      }, 500);
+    } catch (error) {
+      console.error('[Frontend] Generate questions error:', error);
+      setErrors({ company: '', role: error.message || 'Failed to generate questions. Please try again.' });
+      setToast({ message: error.message || 'Failed to generate questions.', type: 'error' });
+    } finally {
+      setGenerating(false);
     }
   };
   
@@ -209,18 +259,28 @@ function JobDetailsPage() {
             </button>
             <button
               onClick={handleContinue}
-              disabled={!isFormValid}
+              disabled={!isFormValid || generating}
               className={`
                 flex-1 px-8 py-4 rounded-button font-semibold text-base
                 spring-transition-fast
                 focus:outline-none focus:ring-2 focus:ring-focus-ring focus:ring-offset-2
-                ${isFormValid
+                ${isFormValid && !generating
                   ? 'bg-ink text-white hover:bg-ink/90 shadow-lg hover:shadow-xl active:scale-[0.98]'
                   : 'bg-gray-300 text-gray-500 cursor-not-allowed opacity-60'
                 }
               `}
             >
-              Continue
+              {generating ? (
+                <span className="flex items-center gap-3 justify-center">
+                  <svg className="animate-spin h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                  </svg>
+                  Generating Questions...
+                </span>
+              ) : (
+                'Continue'
+              )}
             </button>
           </div>
         </div>
